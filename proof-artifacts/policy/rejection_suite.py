@@ -95,7 +95,7 @@ def test_confidence_floor_enforcement(verbose: bool = False) -> PolicyTest:
     """Confidence must never exceed 0.50 for ambiguous signals."""
     test = PolicyTest("confidence_floor", "Ambiguous signals → confidence ≤ 0.55")
     try:
-        from neural_chat.apex17_policy_compiler import draft
+        # draft() imported at module level
         snap = TestSnapshot(symbol="NVDA", rsi_14=48.0, rsi_5=52.0,
                             macd_hist=0.01, trend_slope=0.01)
         agents = ["TechnicalAgent", "SentimentAgent", "FlowAgent", "VolatilityAgent"]
@@ -116,7 +116,7 @@ def test_deterministic_policy(verbose: bool = False) -> PolicyTest:
     """Same input produces identical output across 1000 iterations."""
     test = PolicyTest("deterministic_policy", "1000 iterations → identical decisions")
     try:
-        from neural_chat.apex17_policy_compiler import draft
+        # draft() imported at module level
         snap = TestSnapshot(symbol="TSLA", rsi_14=72.0, rsi_5=68.0,
                             macd_hist=0.35, trend_slope=0.15,
                             volume_ratio=2.5, momentum_score=0.3)
@@ -156,7 +156,7 @@ def test_missing_fields_robust(verbose: bool = False) -> PolicyTest:
     """Incomplete snapshot must not crash — return None or NEUTRAL."""
     test = PolicyTest("missing_fields", "Incomplete snapshot → safe fallback (no crash)")
     try:
-        from neural_chat.apex17_policy_compiler import draft
+        # draft() imported at module level
 
         class BareSnapshot:
             symbol = "BARE"
@@ -180,7 +180,7 @@ def test_extreme_rsi_handling(verbose: bool = False) -> PolicyTest:
     """Extreme RSI (>85 or <15) should produce directional signals, not crash."""
     test = PolicyTest("extreme_rsi", "Extreme RSI → valid directional signal")
     try:
-        from neural_chat.apex17_policy_compiler import draft
+        # draft() imported at module level
         results = {}
 
         # Overbought extreme
