@@ -1,0 +1,128 @@
+# ══════════════════════════════════════════════════════════════════════
+# SignalBrain-OS Hardware Preset — Blackwell 82GB
+# ══════════════════════════════════════════════════════════════════════
+#
+# Reference configuration for RTX PRO 6000 Blackwell (96 GB GDDR7)
+# Derived from the production docker-compose.unified.yml
+#
+# VRAM Budget:
+#   Director (Llama-3.1-70B-AWQ-INT4)    0.72 × 96 = 69.1 GB
+#   Council  (Dolphin3.0-Qwen2.5-3b)     0.18 × 96 = 17.3 GB
+#   Total:   81.6 GB → 14.4 GB headroom for CUDA ctx + OS
+# ══════════════════════════════════════════════════════════════════════
+
+preset_name: blackwell_82gb
+gpu:
+  model: "NVIDIA RTX PRO 6000 Blackwell"
+  vram_gb: 96
+  vram_cap_gb: 81.6
+  headroom_gb: 14.4
+  architecture: blackwell
+
+# ── Inference Engines ──────────────────────────────────────────────
+engines:
+  director:
+    model: "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4"
+    dtype: float16
+    gpu_memory_utilization: 0.72
+    max_model_len: 4096
+    max_num_seqs: 16
+    attention_backend: FLASHINFER
+    enforce_eager: true
+    enable_prefix_caching: true
+    port: 8000
+
+  council:
+    model: "dphn/Dolphin3.0-Qwen2.5-3b"
+    served_model_name: council
+    dtype: bfloat16
+    gpu_memory_utilization: 0.18
+    max_model_len: 4096
+    max_num_seqs: 32
+    attention_backend: FLASHINFER
+    enforce_eager: true
+    enable_prefix_caching: true
+    port: 8002
+
+# ── Brain Gateway (API Router) ─────────────────────────────────────
+brain:
+  routing_targets:
+    - name: director
+      url: "http://<director-service>:8000/v1"
+    - name: council
+      url: "http://<council-service>:8002/v1"
+  cache: redis
+  embeddings: ollama
+
+# ── Apex17 Policy Compiler ─────────────────────────────────────────
+apex17:
+  enabled: true
+  draft_enable: true
+  policies:
+    - TechnicalAgent
+    - SentimentAgent
+    - FlowAgent
+    - VolatilityAgent
+  compiler_mode: deterministic
+  # Probabilistic LLM intent → Deterministic compiled action
+
+# ── PicoAgent Runtime ──────────────────────────────────────────────
+picoagent:
+  swarm_enabled: true
+  full_stack: false    # Swarm mode — lightweight execution plane
+  sentinels:
+    - IngestSentinel     # Pre-flight data validation
+    - RouterSentinel     # Dispatch correctness gate
+    - ValidatorSentinel  # Post-flight quality verification
+  execution_model: "fire-and-forget with sentinel gating"
+
+# ── Dual Trading Loops ─────────────────────────────────────────────
+# Two independent execution planes that share the same Brain gateway
+# but operate on different time horizons and decision authority.
+trading:
+  titan_trader:
+    description: "Tactical execution loop — sub-second position management"
+    mode: paper          # paper | live
+    arm_live: true
+    exec_min_conf: "<threshold>"
+    symbols_count: 50
+    heartbeat_enabled: true   # CIO macro pipeline publishes to Redis
+    synthetic: false
+    metrics_port: 9091
+    depends_on: [brain, redis]
+
+  cio_heartbeat:
+    description: "CIO macro pipeline — publishes approved trading universe to Redis"
+    source: pico_swarm
+    output: "redis://<redis-host>:6379/cio_universe"
+    cadence: "per-cycle"
+    # Macro strategy informs tactical execution — hierarchical decision authority
+
+# ── Cryptographic Audit ────────────────────────────────────────────
+audit:
+  usi_compliance_mode: true
+  usi_audit_db: "<data_dir>/usi_audit.db"
+  merkle_anchor_interval: 100
+  merkle_anchor_secs: 3600
+  anchor_stores:
+    - local_receipt
+    - external_notary   # L4 WORM store
+
+# ── Observability ──────────────────────────────────────────────────
+observability:
+  prometheus: true
+  grafana: true
+  dcgm_exporter: true
+  pushgateway: true
+  gpu_governor:
+    power_limit_w: 500
+    util_cap_pct: 95
+    poll_interval_s: 5
+
+# ── Networks ───────────────────────────────────────────────────────
+networks:
+  internal:
+    driver: bridge
+  signer_net:
+    driver: bridge
+    internal: true   # Air-gapped: engines cannot reach external networks
