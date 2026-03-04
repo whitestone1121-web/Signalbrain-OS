@@ -1,0 +1,66 @@
+{
+  "timestamp_utc": "2026-03-04T21:57:04Z",
+  "all_passed": true,
+  "passed": 5,
+  "total": 5,
+  "tests": [
+    {
+      "test": "flat_market_neutral",
+      "description": "Flat market \u2192 NEUTRAL (no false positives)",
+      "passed": true,
+      "details": {
+        "results": {
+          "TechnicalAgent": "None",
+          "SentimentAgent": "None",
+          "FlowAgent": "None",
+          "VolatilityAgent": "None"
+        },
+        "violations": {}
+      }
+    },
+    {
+      "test": "confidence_floor",
+      "description": "Ambiguous signals \u2192 confidence \u2264 0.55",
+      "passed": true,
+      "details": {
+        "violations": {},
+        "threshold": 0.55
+      }
+    },
+    {
+      "test": "deterministic_policy",
+      "description": "1000 iterations \u2192 identical decisions",
+      "passed": true,
+      "details": {
+        "iterations": 1000,
+        "agents_tested": 4,
+        "reference_hashes": {
+          "TechnicalAgent": "None",
+          "SentimentAgent": "None",
+          "FlowAgent": "None",
+          "VolatilityAgent": "None"
+        },
+        "mismatches": 0
+      }
+    },
+    {
+      "test": "missing_fields",
+      "description": "Incomplete snapshot \u2192 safe fallback (no crash)",
+      "passed": true,
+      "details": {
+        "crashes": {}
+      }
+    },
+    {
+      "test": "extreme_rsi",
+      "description": "Extreme RSI \u2192 valid directional signal",
+      "passed": true,
+      "details": {
+        "results": {
+          "overbought": "None",
+          "oversold": "None"
+        }
+      }
+    }
+  ]
+}

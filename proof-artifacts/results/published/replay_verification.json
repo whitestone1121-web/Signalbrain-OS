@@ -1,0 +1,30 @@
+{
+  "timestamp_utc": "2026-03-04T21:58:38Z",
+  "all_checks_passed": true,
+  "checks": [
+    {
+      "check": "usi_hmac_integrity",
+      "passed": true,
+      "records_checked": 0,
+      "records_valid": 0,
+      "records_tampered": 0,
+      "tampered_hashes": []
+    },
+    {
+      "check": "merkle_anchors",
+      "passed": true,
+      "receipts_checked": 10,
+      "receipts_verified": 10,
+      "receipts_failed": 0,
+      "errors": null
+    },
+    {
+      "check": "deterministic_replay",
+      "passed": true,
+      "original_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "replay_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "config_hash_match": false,
+      "actions_deterministic": true
+    }
+  ]
+}
