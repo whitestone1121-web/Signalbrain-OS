@@ -24,6 +24,8 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 ROOT = Path(__file__).resolve().parent.parent.parent
+PROOF_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROOF_DIR))
 try:
     from signalbrain.audit import USIPersistenceService
     from signalbrain.anchor import build_merkle_root

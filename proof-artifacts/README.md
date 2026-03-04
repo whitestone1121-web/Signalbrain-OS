@@ -38,14 +38,30 @@ SignalBrain-OS
 
 ---
 
+## Prerequisites
+
+These scripts wrap **live production modules** — no mocks, no stubs.
+To run them, you need:
+
+1. **The full SignalBrain-OS source tree** (this repo must be cloned inside the project root)
+2. **Python 3.10+** with dependencies installed (`pip install -r requirements.txt`)
+3. **GPU hardware** (RTX PRO 6000 Blackwell recommended) for VRAM benchmarks
+4. **Docker stack running** for full verification (`docker compose up`)
+
+> **Note**: The `signalbrain/` package included here is an interface shim.
+> It resolves the runtime modules automatically when run from the project root.
+> If you see `ModuleNotFoundError`, you are running outside the SignalBrain-OS environment.
+
+---
+
 ## Quick Start
 
 ```bash
-# 1. Clone and enter
+# 1. Clone and enter (from within the SignalBrain-OS project root)
 git clone https://github.com/whitestone1121-web/Signalbrain-OS.git
 cd Signalbrain-OS
 
-# 2. Run a 10-second benchmark
+# 2. Run a 10-second benchmark (requires runtime)
 python proof-artifacts/benchmarks/run_canonical.py --duration 10
 
 # 3. Verify deterministic replay

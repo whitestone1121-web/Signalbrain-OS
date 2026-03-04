@@ -30,6 +30,8 @@ from typing import Any, Dict, List, Optional
 
 # ── Ensure SignalBrain-OS runtime is importable ──
 ROOT = Path(__file__).resolve().parent.parent.parent
+PROOF_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROOF_DIR))  # Find signalbrain/ shim
 try:
     from signalbrain.compiler import draft, get_stats
 except ImportError:
