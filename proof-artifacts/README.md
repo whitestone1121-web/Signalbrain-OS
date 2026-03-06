@@ -40,41 +40,113 @@ SignalBrain-OS
 
 ## Prerequisites
 
-These scripts wrap **live production modules** — no mocks, no stubs.
-To run them, you need:
+- **Python 3.10+** — no other dependencies required
+- Works standalone (demo mode) or inside the full SignalBrain-OS environment
 
-1. **The full SignalBrain-OS source tree** (this repo must be cloned inside the project root)
-2. **Python 3.10+** with dependencies installed (`pip install -r requirements.txt`)
-3. **GPU hardware** (RTX PRO 6000 Blackwell recommended) for VRAM benchmarks
-4. **Docker stack running** for full verification (`docker compose up`)
-
-> **Note**: The `signalbrain/` package included here is an interface shim.
-> It resolves the runtime modules automatically when run from the project root.
-> If you see `ModuleNotFoundError`, you are running outside the SignalBrain-OS environment.
+> **Demo Mode**: When cloned standalone, all scripts run in DEMO MODE with
+> a synthetic policy engine. Results prove the API contract and determinism.
+> For production data, run inside the full SignalBrain-OS environment.
 
 ---
 
 ## Quick Start
 
+Clone and enter:
+
 ```bash
-# 1. Clone and enter (from within the SignalBrain-OS project root)
 git clone https://github.com/whitestone1121-web/Signalbrain-OS.git
 cd Signalbrain-OS
+```
 
-# 2. Run a 10-second benchmark (requires runtime)
+Run a 10-second benchmark:
+
+```bash
 python proof-artifacts/benchmarks/run_canonical.py --duration 10
+```
 
-# 3. Verify deterministic replay
-python proof-artifacts/replay/verify.py \
-    --run results/<run_id>/report.json
+Run the full expanded policy test suite (31 tests across 6 categories):
 
-# 4. Run Apex17 policy enforcement tests
+```bash
+python proof-artifacts/policy/run_all.py --verbose
+```
+
+Run just the core policy enforcement tests:
+
+```bash
 python proof-artifacts/policy/rejection_suite.py --verbose
+```
+
+Verify deterministic replay (use the report path printed by the benchmark above):
+
+```bash
+python proof-artifacts/replay/verify.py --run proof-artifacts/results/YOUR_RUN_ID/report.json --assert deterministic_actions
 ```
 
 ---
 
-## What Each Script Proves
+## Expanded Policy Test Harness — 31 Tests Across 6 Suites
+
+Run all suites with one command:
+
+```bash
+python proof-artifacts/policy/run_all.py --verbose --output proof-artifacts/results/expanded_policy_suite.json
+```
+
+### Suite 1: `rejection_suite.py` — Core Policy Enforcement (5 tests)
+
+| Test | What It Proves |
+|------|----------------|
+| `flat_market_neutral` | No false positives in flat markets |
+| `confidence_floor` | Ambiguous signals never breach confidence threshold |
+| `deterministic_policy` | 1,000 iterations → identical output |
+| `missing_fields` | Incomplete data → safe fallback (no crash) |
+| `extreme_rsi` | Handles market extremes without policy violation |
+
+### Suite 2: `adversarial_suite.py` — Schema Robustness (6 tests)
+
+| Test | What It Proves |
+|------|----------------|
+| `nan_fields` | NaN inputs → safe fallback, no crash |
+| `inf_fields` | +Inf/−Inf inputs → safe fallback |
+| `negative_price` | Negative price → NEUTRAL or None |
+| `zero_volume` | Zero volume → no ZeroDivisionError |
+| `extreme_outliers` | RSI=1e12 → clamped, confidence ≤ 1.0 |
+| `string_coercion` | String in numeric field → caught |
+
+### Suite 3: `policy_matrix_suite.py` — Golden Scenarios (11 tests)
+
+Each test constructs a specific market condition matching a documented DSL rule
+and asserts the expected action fires.
+
+Covers all 4 policy agents: Technical, Sentiment, Flow, Volatility.
+
+### Suite 4: `temporal_suite.py` — Anti-Thrash Consistency (3 tests)
+
+| Test | What It Proves |
+|------|----------------|
+| `micro_jitter_stable` | ±0.1% noise → ≤5% action changes |
+| `threshold_crossing_count` | RSI ramp 20→80 → limited transitions |
+| `boundary_oscillation` | RSI 49.9↔50.1 → stable output |
+
+### Suite 5: `stress_suite.py` — Latency & Overload (4 tests)
+
+| Test | What It Proves |
+|------|----------------|
+| `single_symbol_latency` | 10,000 calls → p99 < 500μs |
+| `batch_50_symbols` | 200 calls (50 × 4 agents) → < 50ms |
+| `batch_200_symbols` | 800 calls (200 × 4 agents) → < 200ms |
+| `burst_determinism` | 1,000 burst calls → identical hashes |
+
+### Suite 6: `invariance_suite.py` — Cross-Entropy Invariance (2 tests)
+
+| Test | What It Proves |
+|------|----------------|
+| `multiprocess_invariance` | 4 child processes → identical hashes |
+| `reimport_invariance` | Import → draft → reimport → same hashes |
+
+---
+
+## Benchmarks & Replay
 
 ### `benchmarks/run_canonical.py`
 **Claim**: Apex17 evaluates 4-agent policy drafts at µs-scale latency with deterministic outputs.
@@ -85,13 +157,8 @@ python proof-artifacts/policy/rejection_suite.py --verbose
 | `bypass_rate` | Fraction of decisions resolved without LLM |
 | `latency.p50_us` / `p99_us` | Per-evaluation latency |
 | `decision_digest` | SHA-256 of all policy hashes — proves determinism |
-| `gpu.vram_used_mb` | GPU memory under load |
-
-**Output**: `results/<run_id>/report.json`
 
 ### `benchmarks/reproduce_published.py`
-**Claim**: Published website metrics are not aspirational — they're reproducible.
-
 Runs `run_canonical.py` with the exact parameters used in signalbrain.ai claims,
 then validates results against stated thresholds.
 
@@ -100,40 +167,19 @@ python proof-artifacts/benchmarks/reproduce_published.py --suite website_v1
 ```
 
 ### `replay/verify.py`
-**Claim**: Every decision in the system is tamper-evident and deterministically replayable.
-
 Three independent checks:
-1. **USI HMAC Integrity** — Re-verifies HMAC-SHA256 signatures on the last N archived USI records
-2. **Merkle Anchor Roots** — Rebuilds Merkle tree from leaf hashes, confirms root matches archived receipt
-3. **Deterministic Replay** — Re-runs a previous benchmark, compares decision digests bit-for-bit
+1. **USI HMAC Integrity** — Re-verifies HMAC-SHA256 signatures
+2. **Merkle Anchor Roots** — Rebuilds tree, confirms root matches receipt
+3. **Deterministic Replay** — Re-runs benchmark, compares digests
 
-```bash
-python proof-artifacts/replay/verify.py \
-    --usi-db data/usi_audit.db \
-    --run results/canonical.json \
-    --assert deterministic_actions merkle_anchor usi_integrity
-```
-
-### `policy/rejection_suite.py`
-**Claim**: The Apex17 compiler enforces policy at the kernel level — before any capital-facing action.
-
-5 enforcement tests:
-| Test | What It Proves |
-|------|----------------|
-| `flat_market_neutral` | No false positives in flat markets |
-| `confidence_floor` | Ambiguous signals never breach confidence threshold |
-| `deterministic_policy` | 1,000 iterations → identical output |
-| `missing_fields` | Incomplete data → safe fallback (no crash) |
-| `extreme_rsi` | Handles market extremes without policy violation |
+In demo mode, performs self-consistency (runs twice, verifies identical digests).
 
 ### `presets/blackwell_82gb.yml`
-Full production hardware preset documenting:
+Full production hardware preset:
 - VRAM budget: Director (69.1 GB) + Council (17.3 GB) = 81.6 GB
 - Apex17 policy compiler configuration
-- PicoAgent swarm runtime with sentinel pipeline
 - Dual trading loops: CIO heartbeat (macro) + Titan Trader (tactical)
 - Cryptographic audit (USI + Merkle anchoring)
-- Observability stack (Prometheus + Grafana + DCGM)
 
 ---
 
@@ -187,19 +233,31 @@ Neither can override the other — hierarchical decision authority.
 
 ```
 proof-artifacts/
-├── README.md                          ← You are here
+├── README.md
 ├── benchmarks/
 │   ├── run_canonical.py               ← Core benchmark
 │   └── reproduce_published.py         ← Validate website claims
 ├── replay/
 │   └── verify.py                      ← USI + Merkle + replay checks
 ├── policy/
-│   └── rejection_suite.py             ← Apex17 enforcement tests
+│   ├── run_all.py                     ← Orchestrator (all 6 suites)
+│   ├── rejection_suite.py             ← Core enforcement (5 tests)
+│   ├── adversarial_suite.py           ← Schema robustness (6 tests)
+│   ├── policy_matrix_suite.py         ← Golden scenarios (11 tests)
+│   ├── temporal_suite.py              ← Anti-thrash (3 tests)
+│   ├── stress_suite.py                ← Latency & overload (4 tests)
+│   └── invariance_suite.py            ← Cross-entropy (2 tests)
 ├── presets/
 │   └── blackwell_82gb.yml             ← Production hardware config
-└── results/                           ← .gitignored, generated by runs
+├── signalbrain/
+│   ├── __init__.py
+│   ├── compiler.py                    ← Policy compiler shim
+│   ├── audit.py                       ← USI audit interface
+│   └── anchor.py                      ← Merkle anchor interface
+└── results/                           ← Generated by test runs
 ```
 
 ---
 
 *SignalBrain-OS · 15 U.S. patent applications · Built on Blackwell*
+
