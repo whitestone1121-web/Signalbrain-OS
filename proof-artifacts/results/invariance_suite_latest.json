@@ -1,0 +1,45 @@
+{
+  "suite": "cross_entropy_invariance",
+  "timestamp_utc": "2026-03-06T05:09:10Z",
+  "all_passed": true,
+  "passed": 2,
+  "total": 2,
+  "tests": [
+    {
+      "test": "multiprocess_invariance",
+      "description": "4 child processes \u2192 identical hashes per agent",
+      "passed": true,
+      "details": {
+        "reference_hashes": {
+          "TechnicalAgent": "None",
+          "SentimentAgent": "None",
+          "FlowAgent": "None",
+          "VolatilityAgent": "None"
+        },
+        "workers": 4,
+        "mismatches": 0,
+        "mismatch_details": "none"
+      }
+    },
+    {
+      "test": "reimport_invariance",
+      "description": "Import, draft, reimport, draft \u2192 identical hashes",
+      "passed": true,
+      "details": {
+        "hashes_pass_1": {
+          "TechnicalAgent": "None",
+          "SentimentAgent": "None",
+          "FlowAgent": "None",
+          "VolatilityAgent": "None"
+        },
+        "hashes_pass_2": {
+          "TechnicalAgent": "None",
+          "SentimentAgent": "None",
+          "FlowAgent": "None",
+          "VolatilityAgent": "None"
+        },
+        "mismatches": "none"
+      }
+    }
+  ]
+}

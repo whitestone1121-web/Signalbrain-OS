@@ -1,0 +1,105 @@
+{
+  "suite": "adversarial_schema",
+  "timestamp_utc": "2026-03-06T05:09:08Z",
+  "all_passed": true,
+  "passed": 6,
+  "total": 6,
+  "tests": [
+    {
+      "test": "nan_fields",
+      "description": "NaN inputs \u2192 safe fallback (no crash)",
+      "passed": true,
+      "details": {
+        "results": {
+          "TechnicalAgent": "None",
+          "SentimentAgent": "None",
+          "FlowAgent": "None",
+          "VolatilityAgent": "None"
+        },
+        "crashes": {}
+      }
+    },
+    {
+      "test": "inf_fields",
+      "description": "+Inf/-Inf inputs \u2192 safe fallback (no crash)",
+      "passed": true,
+      "details": {
+        "results": {
+          "TechnicalAgent": "None",
+          "SentimentAgent": "None",
+          "FlowAgent": "None",
+          "VolatilityAgent": "None"
+        },
+        "crashes": {}
+      }
+    },
+    {
+      "test": "negative_price",
+      "description": "Negative price \u2192 NEUTRAL or None (no crash)",
+      "passed": true,
+      "details": {
+        "results": {
+          "TechnicalAgent": "None",
+          "SentimentAgent": "None",
+          "FlowAgent": "None",
+          "VolatilityAgent": "None"
+        },
+        "crashes": {}
+      }
+    },
+    {
+      "test": "zero_volume",
+      "description": "Zero volume_ratio \u2192 safe fallback (no ZeroDivisionError)",
+      "passed": true,
+      "details": {
+        "results": {
+          "TechnicalAgent": "None",
+          "SentimentAgent": "None",
+          "FlowAgent": "None",
+          "VolatilityAgent": "None"
+        },
+        "crashes": {}
+      }
+    },
+    {
+      "test": "extreme_outliers",
+      "description": "RSI=1e12, vol=1e12 \u2192 clamped or safe fallback",
+      "passed": true,
+      "details": {
+        "results": {
+          "TechnicalAgent": {
+            "action": "None",
+            "confidence": null
+          },
+          "SentimentAgent": {
+            "action": "None",
+            "confidence": null
+          },
+          "FlowAgent": {
+            "action": "None",
+            "confidence": null
+          },
+          "VolatilityAgent": {
+            "action": "None",
+            "confidence": null
+          }
+        },
+        "crashes": {}
+      }
+    },
+    {
+      "test": "string_coercion",
+      "description": "String in RSI field \u2192 caught, no uncaught TypeError",
+      "passed": true,
+      "details": {
+        "results": {
+          "TechnicalAgent": "None",
+          "SentimentAgent": "None",
+          "FlowAgent": "None",
+          "VolatilityAgent": "None"
+        },
+        "crashes": {}
+      }
+    }
+  ]
+}

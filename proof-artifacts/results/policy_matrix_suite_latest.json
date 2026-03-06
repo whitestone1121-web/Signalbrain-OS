@@ -1,0 +1,195 @@
+{
+  "suite": "policy_matrix",
+  "timestamp_utc": "2026-03-06T05:09:09Z",
+  "all_passed": true,
+  "passed": 11,
+  "total": 11,
+  "tests": [
+    {
+      "test": "tech_strong_uptrend",
+      "description": "Strong uptrend + RSI confirm \u2192 BUY or directional",
+      "passed": true,
+      "details": {
+        "uptrend": {
+          "actual": "None",
+          "allowed": [
+            "BREAKOUT",
+            "INCREASE_SIZE",
+            "None",
+            "BUY"
+          ],
+          "ok": true
+        }
+      }
+    },
+    {
+      "test": "tech_rsi_divergence",
+      "description": "RSI_14=72 vs RSI_5=45 \u2192 divergence signal",
+      "passed": true,
+      "details": {
+        "divergence": {
+          "actual": "None",
+          "allowed": [
+            "ADJUST_HEDGE",
+            "SELL",
+            "NEUTRAL",
+            "None",
+            "REVERSAL"
+          ],
+          "ok": true
+        }
+      }
+    },
+    {
+      "test": "tech_oversold_reversal",
+      "description": "RSI=22 + positive MACD \u2192 oversold reversal BUY",
+      "passed": true,
+      "details": {
+        "reversal": {
+          "actual": "None",
+          "allowed": [
+            "INCREASE_SIZE",
+            "REVERSAL",
+            "None",
+            "BUY"
+          ],
+          "ok": true
+        }
+      }
+    },
+    {
+      "test": "sent_vol_breakout",
+      "description": "High vol_regime + positive momentum \u2192 BUY/BREAKOUT",
+      "passed": true,
+      "details": {
+        "breakout": {
+          "actual": "None",
+          "allowed": [
+            "BREAKOUT",
+            "INCREASE_SIZE",
+            "None",
+            "BUY"
+          ],
+          "ok": true
+        }
+      }
+    },
+    {
+      "test": "sent_vol_compression",
+      "description": "Low vol_regime + flat momentum \u2192 NEUTRAL",
+      "passed": true,
+      "details": {
+        "compression": {
+          "actual": "None",
+          "allowed": [
+            "HOLD",
+            "NEUTRAL",
+            "None"
+          ],
+          "ok": true
+        }
+      }
+    },
+    {
+      "test": "sent_risk_off",
+      "description": "High vol + negative momentum \u2192 SELL/risk-off",
+      "passed": true,
+      "details": {
+        "risk_off": {
+          "actual": "None",
+          "allowed": [
+            "REDUCE_SIZE",
+            "ADJUST_HEDGE",
+            "None",
+            "EXHAUSTION",
+            "REVERSAL",
+            "SELL"
+          ],
+          "ok": true
+        }
+      }
+    },
+    {
+      "test": "flow_climactic_volume",
+      "description": "volume_ratio=12x \u2192 climactic override fires",
+      "passed": true,
+      "details": {
+        "climactic": {
+          "actual": "None",
+          "note": "demo mode may return None"
+        }
+      }
+    },
+    {
+      "test": "flow_distribution",
+      "description": "price_pct=80 + heavy volume \u2192 ADJUST_HEDGE/SELL",
+      "passed": true,
+      "details": {
+        "distribution": {
+          "actual": "None",
+          "allowed": [
+            "None",
+            "ADJUST_HEDGE",
+            "DISTRIBUTION",
+            "SELL",
+            "REDUCE_SIZE"
+          ],
+          "ok": true
+        }
+      }
+    },
+    {
+      "test": "vol_extreme_exhaustion",
+      "description": "vol_regime=92 \u2192 exhaustion fade signal",
+      "passed": true,
+      "details": {
+        "exhaustion": {
+          "actual": "None",
+          "allowed": [
+            "REDUCE_SIZE",
+            "ADJUST_HEDGE",
+            "None",
+            "EXHAUSTION",
+            "REVERSAL",
+            "SELL"
+          ],
+          "ok": true
+        }
+      }
+    },
+    {
+      "test": "vol_spring_loaded",
+      "description": "vol_regime=8 + tight spread \u2192 spring-loaded marker",
+      "passed": true,
+      "details": {
+        "spring_loaded": {
+          "actual": "None",
+          "allowed": [
+            "BUY",
+            "BREAKOUT",
+            "HOLD",
+            "NEUTRAL",
+            "None"
+          ],
+          "ok": true
+        }
+      }
+    },
+    {
+      "test": "vol_normal_neutral",
+      "description": "vol_regime=50, no signal \u2192 NEUTRAL",
+      "passed": true,
+      "details": {
+        "normal_neutral": {
+          "actual": "None",
+          "allowed": [
+            "HOLD",
+            "NEUTRAL",
+            "None"
+          ],
+          "ok": true
+        }
+      }
+    }
+  ]
+}

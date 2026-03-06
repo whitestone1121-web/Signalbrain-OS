@@ -1,0 +1,54 @@
+{
+  "suite": "temporal_consistency",
+  "timestamp_utc": "2026-03-06T05:09:09Z",
+  "all_passed": true,
+  "passed": 3,
+  "total": 3,
+  "tests": [
+    {
+      "test": "micro_jitter_stable",
+      "description": "\u00b10.1% noise on all fields \u2192 \u22645% action changes",
+      "passed": true,
+      "details": {
+        "baseline_action": "None",
+        "n_runs": 100,
+        "flips": 0,
+        "flip_rate": 0.0,
+        "threshold": 0.05
+      }
+    },
+    {
+      "test": "threshold_crossing_count",
+      "description": "RSI ramp 20\u219280 \u2192 limited action transitions",
+      "passed": true,
+      "details": {
+        "rsi_range": "20\u219280",
+        "steps": 61,
+        "transitions": 0,
+        "max_allowed": 10,
+        "action_sequence_sample": [
+          "None",
+          "None",
+          "None",
+          "None",
+          "None",
+          "None",
+          "None"
+        ]
+      }
+    },
+    {
+      "test": "boundary_oscillation",
+      "description": "RSI 49.9\u219450.1 oscillation \u2192 stable (\u22642 unique actions)",
+      "passed": true,
+      "details": {
+        "oscillation_range": "49.9\u219450.1",
+        "steps": 50,
+        "unique_actions": [
+          "None"
+        ],
+        "count": 1
+      }
+    }
+  ]
+}

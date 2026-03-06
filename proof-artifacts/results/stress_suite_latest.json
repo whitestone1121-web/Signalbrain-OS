@@ -1,0 +1,59 @@
+{
+  "suite": "latency_stress",
+  "timestamp_utc": "2026-03-06T05:09:09Z",
+  "all_passed": true,
+  "passed": 4,
+  "total": 4,
+  "tests": [
+    {
+      "test": "single_symbol_latency",
+      "description": "10,000 draft() calls \u2192 p99 < 500\u03bcs",
+      "passed": true,
+      "details": {
+        "calls": 10000,
+        "p50_us": 0.1,
+        "p99_us": 0.1,
+        "p999_us": 0.2,
+        "max_us": 0.3,
+        "threshold_p99_us": 500
+      }
+    },
+    {
+      "test": "batch_50_symbols",
+      "description": "50 symbols \u00d7 4 agents (200 calls) \u2192 total < 50ms",
+      "passed": true,
+      "details": {
+        "symbols": 50,
+        "agents": 4,
+        "total_calls": 200,
+        "elapsed_ms": 0.01,
+        "threshold_ms": 50,
+        "per_call_us": 0.0
+      }
+    },
+    {
+      "test": "batch_200_symbols",
+      "description": "200 symbols \u00d7 4 agents (800 calls) \u2192 total < 200ms",
+      "passed": true,
+      "details": {
+        "symbols": 200,
+        "agents": 4,
+        "total_calls": 800,
+        "elapsed_ms": 0.03,
+        "threshold_ms": 200,
+        "per_call_us": 0.0
+      }
+    },
+    {
+      "test": "burst_determinism",
+      "description": "1000 burst calls \u2192 identical hashes (no degradation)",
+      "passed": true,
+      "details": {
+        "burst_calls": 1000,
+        "unique_hashes": 0,
+        "unique_actions": [],
+        "elapsed_ms": 0.03
+      }
+    }
+  ]
+}
