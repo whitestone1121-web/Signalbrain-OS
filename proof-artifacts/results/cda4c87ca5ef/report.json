@@ -1,0 +1,74 @@
+{
+  "run_id": "cda4c87ca5ef",
+  "timestamp_utc": "2026-03-04T19:56:44Z",
+  "config": {
+    "preset": "blackwell_82gb",
+    "duration_sec": 10,
+    "symbols": [
+      "SPY",
+      "NVDA",
+      "TSLA",
+      "AAPL",
+      "MSFT",
+      "GOOGL",
+      "AMZN",
+      "META",
+      "AMD",
+      "AVGO"
+    ],
+    "agents": [
+      "TechnicalAgent",
+      "SentimentAgent",
+      "FlowAgent",
+      "VolatilityAgent"
+    ],
+    "seed": 42
+  },
+  "results": {
+    "total_evaluations": 44941890,
+    "duration_sec": 10.0,
+    "throughput_eval_per_sec": 4494187.9,
+    "bypass_rate": 0.0,
+    "decisions_produced": 0,
+    "latency": {
+      "p50_us": 0.05,
+      "p95_us": 0.07,
+      "p99_us": 0.18,
+      "mean_us": 0.07,
+      "min_us": 0.04,
+      "max_us": 1036.53
+    }
+  },
+  "apex17_stats": {
+    "council_drafts_total": 0,
+    "council_accepted": 0,
+    "council_rejected": 0,
+    "council_bypass_rate": 0.0,
+    "market_drafts_total": 0,
+    "market_bypassed": 0,
+    "market_bypass_rate": 0.0,
+    "avg_latency_us": 0.0
+  },
+  "gpu": {
+    "before": {
+      "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "vram_used_mb": 91307.0,
+      "vram_total_mb": 97887.0,
+      "gpu_util_pct": 1.0,
+      "temp_c": 36.0,
+      "power_w": 29.34
+    },
+    "after": {
+      "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "vram_used_mb": 91307.0,
+      "vram_total_mb": 97887.0,
+      "gpu_util_pct": 0.0,
+      "temp_c": 35.0,
+      "power_w": 17.75
+    }
+  },
+  "verification": {
+    "config_hash": "14a320f759477fc1a87d8de48ad667786a44eebe709bc32ecd4217b6922bcd90",
+    "decision_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  }
+}
