@@ -67,7 +67,8 @@ def _resolve_runtime():
 # Resolve on import
 _resolve_runtime()
 
-if _DEMO_MODE:
+if _DEMO_MODE and not os.environ.get("_SIGNALBRAIN_DEMO_BANNER_SHOWN"):
+    os.environ["_SIGNALBRAIN_DEMO_BANNER_SHOWN"] = "1"
     print("┌─────────────────────────────────────────────────────┐")
     print("│  ⚠  DEMO MODE — SignalBrain-OS runtime not found   │")
     print("│  Results are synthetic. Run inside the full         │")
@@ -101,9 +102,9 @@ def _demo_draft(snapshot, agent_name: str) -> Optional[PolicyDecision]:
     # Deterministic signal logic
     if agent_name == "TechnicalAgent":
         if value < config["buy_threshold"]:
-            action, conf = "BUY", 0.45 + (config["buy_threshold"] - value) / 100
+            action, conf = "BUY", min(0.55, 0.45 + (config["buy_threshold"] - value) / 100)
         elif value > config["sell_threshold"]:
-            action, conf = "SELL", 0.45 + (value - config["sell_threshold"]) / 100
+            action, conf = "SELL", min(0.55, 0.45 + (value - config["sell_threshold"]) / 100)
         else:
             return None  # No bypass — neutral zone
     elif agent_name == "SentimentAgent":
@@ -114,7 +115,11 @@ def _demo_draft(snapshot, agent_name: str) -> Optional[PolicyDecision]:
         else:
             return None
     elif agent_name == "FlowAgent":
-        if value > config["buy_threshold"]:
+        price_pct = getattr(snapshot, "price_percentile", 50.0)
+        if price_pct > 75 and value > 2.0:
+            # Distribution: high price + heavy volume → SELL/ADJUST_HEDGE
+            action, conf = "SELL", min(0.52, 0.40 + value / 20)
+        elif value > config["buy_threshold"]:
             action, conf = "BUY", min(0.52, 0.40 + value / 20)
         elif value < config["sell_threshold"]:
             action, conf = "SELL", min(0.52, 0.40 + (1 - value) / 5)
