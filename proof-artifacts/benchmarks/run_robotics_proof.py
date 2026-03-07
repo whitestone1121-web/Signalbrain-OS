@@ -70,6 +70,7 @@ class ProofReport:
     elapsed_sec: float = 0.0
     all_passed: bool = True
     digest: str = ""
+    engine_digest: str = ""
 
     def stamp(self, suites: List[SuiteResult]):
         for s in suites:
@@ -81,6 +82,14 @@ class ProofReport:
         self.all_passed = self.total_failed == 0
         self.digest = hashlib.sha256(
             json.dumps(self.suites, sort_keys=True).encode()
+        ).hexdigest()[:16]
+        # Engine digest: only test names, pass/fail, and detail — no timing
+        engine_data = [
+            {"name": t["name"], "passed": t["passed"], "detail": t["detail"]}
+            for s in self.suites for t in s["tests"]
+        ]
+        self.engine_digest = hashlib.sha256(
+            json.dumps(engine_data, sort_keys=True).encode()
         ).hexdigest()[:16]
 
 
@@ -583,7 +592,8 @@ def main():
     print(f"  {report.total_passed}/{report.total_tests} tests "
           f"({report.total_skipped} skipped) "
           f"in {report.elapsed_sec:.2f}s")
-    print(f"  Digest: {report.digest}")
+    print(f"  Digest:        {report.digest}")
+    print(f"  Engine Digest: {report.engine_digest}  (deterministic — excludes timing)")
 
     # Write JSON
     if args.output:
