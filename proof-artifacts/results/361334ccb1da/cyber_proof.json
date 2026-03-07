@@ -1,0 +1,86 @@
+{
+  "suite": "cyber_perception",
+  "engine": "Apex17 Cyber",
+  "timestamp": "2026-03-07 23:15:45",
+  "passed": 10,
+  "total": 10,
+  "total_ms": 6.7,
+  "domains_proven": [
+    "Markets",
+    "Robotics",
+    "Healthcare",
+    "Defense",
+    "Cyber"
+  ],
+  "tests": [
+    {
+      "name": "netflow_traffic_extraction",
+      "passed": true,
+      "ms": 0.41,
+      "detail": "500 traffic pts, 4-dim topology"
+    },
+    {
+      "name": "dns_query_graph",
+      "passed": true,
+      "ms": 0.06,
+      "detail": "18 domains, 9 DGA candidates, entropy=3.078"
+    },
+    {
+      "name": "endpoint_process_tree",
+      "passed": true,
+      "ms": 0.01,
+      "detail": "100 procs, 4 suspicious, 1 privesc"
+    },
+    {
+      "name": "persistence_h0",
+      "passed": true,
+      "ms": 0.02,
+      "detail": "12 components, stability=0.026, anomaly=0.974"
+    },
+    {
+      "name": "threat_fingerprint_recall",
+      "passed": true,
+      "ms": 0.0,
+      "detail": "8/8 threats recalled O(1)"
+    },
+    {
+      "name": "fingerprint_determinism",
+      "passed": true,
+      "ms": 0.0,
+      "detail": "hash=0xBB7CB695A8FF32B5 (deterministic)"
+    },
+    {
+      "name": "soc_council",
+      "passed": true,
+      "ms": 0.01,
+      "detail": "Level3-Suspicious \u00b7 83% (3 agents)"
+    },
+    {
+      "name": "threat_classification",
+      "passed": true,
+      "ms": 0.0,
+      "detail": "APT=\u2713 \u00b7 C2=\u2713 \u00b7 Suspicious=\u2713 \u00b7 Anomaly=\u2713 \u00b7 Benign=\u2713"
+    },
+    {
+      "name": "cyber_latency_gate",
+      "passed": true,
+      "ms": 0.04,
+      "detail": "0.0ms avg (gate: <50ms)"
+    },
+    {
+      "name": "forensic_chain",
+      "passed": true,
+      "ms": 0.01,
+      "detail": "input=4a781e24c9e728cc\u2192fp=0x2055F9D636D18ED5\u2192Level3-Suspicious"
+    }
+  ],
+  "forensic_chain": {
+    "input_hash": "4a781e24c9e728cc",
+    "fingerprint": "0x2055F9D636D18ED5",
+    "council_level": "Level3-Suspicious",
+    "confidence": 0.83,
+    "agents_voted": 3,
+    "classification": "Level3-Suspicious",
+    "deterministic": true
+  }
+}
