@@ -1,0 +1,94 @@
+{
+  "engine": "Apex17-ISR",
+  "timestamp": "2026-03-07T14:39:15",
+  "suite": "ISR Perception",
+  "tests_total": 10,
+  "tests_passed": 10,
+  "total_ms": 20.57,
+  "all_passed": true,
+  "domains_proven": [
+    "Markets",
+    "Robotics",
+    "Healthcare",
+    "Defense"
+  ],
+  "int_sources_tested": [
+    "SAR_Imagery",
+    "SIGINT_PDW",
+    "IMINT_FMV",
+    "Multi_INT_Fused",
+    "Emitter_Catalog"
+  ],
+  "results": [
+    {
+      "name": "sar_tile_extraction",
+      "suite": "ISR Perception",
+      "passed": true,
+      "detail": "8,888 reflectivity pts, 5 targets",
+      "elapsed_ms": 11.174972984008491
+    },
+    {
+      "name": "pdw_pulse_topology",
+      "suite": "ISR Perception",
+      "passed": true,
+      "detail": "8 emitters, 7 H\u2080 features",
+      "elapsed_ms": 1.8716359627433121
+    },
+    {
+      "name": "imint_feature_extraction",
+      "suite": "ISR Perception",
+      "passed": true,
+      "detail": "928 feature pts, 20 objects",
+      "elapsed_ms": 4.4866090174764395
+    },
+    {
+      "name": "persistence_h0",
+      "suite": "ISR Perception",
+      "passed": true,
+      "detail": "11 components, stability=0.650, anomaly=0.350",
+      "elapsed_ms": 0.42713701259344816
+    },
+    {
+      "name": "emitter_fingerprint_recall",
+      "suite": "ISR Perception",
+      "passed": true,
+      "detail": "8/8 emitters recalled O(1)",
+      "elapsed_ms": 0.290993950329721
+    },
+    {
+      "name": "fingerprint_determinism",
+      "suite": "ISR Perception",
+      "passed": true,
+      "detail": "hash=0x8BE7096C6809A4B1 (deterministic)",
+      "elapsed_ms": 0.1761879539117217
+    },
+    {
+      "name": "multi_int_council",
+      "suite": "ISR Perception",
+      "passed": true,
+      "detail": "Level3-Unknown \u00b7 70% (3 agents)",
+      "elapsed_ms": 1.400858978740871
+    },
+    {
+      "name": "threat_classification",
+      "suite": "ISR Perception",
+      "passed": true,
+      "detail": "Level1-Hostile=\u2713, Level2-Suspect=\u2713, Level3-Unknown=\u2713, Level4-Neutral=\u2713",
+      "elapsed_ms": 0.004129018634557724
+    },
+    {
+      "name": "isr_latency_gate",
+      "suite": "ISR Perception",
+      "passed": true,
+      "detail": "0.4ms avg (gate: <50ms)",
+      "elapsed_ms": 0.36146279890090227
+    },
+    {
+      "name": "audit_chain",
+      "suite": "ISR Perception",
+      "passed": true,
+      "detail": "input=c788615c63670f98\u2192fp=0xD20A76DB84ACF16D\u2192Level3-Unknown",
+      "elapsed_ms": 0.3800209960900247
+    }
+  ]
+}
