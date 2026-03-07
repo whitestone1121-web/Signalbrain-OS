@@ -27,7 +27,9 @@ from typing import Any, Dict, List, Optional
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 SRC  = ROOT / "src"
+SIGNALBRAIN = Path(__file__).resolve().parent.parent  # proof-artifacts/
 sys.path.insert(0, str(SRC))
+sys.path.insert(0, str(SIGNALBRAIN))
 
 # ══════════════════════════════════════════════════════════════════
 # Data Structures
@@ -175,7 +177,7 @@ def run_market_topology_suite() -> SuiteResult:
     t0 = time.perf_counter()
 
     try:
-        from neural_chat.market_topology import compute_market_topology
+        from signalbrain.topology import compute_market_topology
     except ImportError as e:
         suite.tests.append(TestResult(
             name="import", suite=suite.name,
@@ -291,7 +293,7 @@ def run_regime_memory_suite() -> SuiteResult:
     t0 = time.perf_counter()
 
     try:
-        from neural_chat.regime_memory import RegimeFingerprint, RegimeMemory
+        from signalbrain.regime_memory import RegimeFingerprint, RegimeMemory
     except ImportError as e:
         suite.tests.append(TestResult(
             name="import", suite=suite.name,
@@ -404,8 +406,8 @@ def run_topological_guard_suite() -> SuiteResult:
     t0 = time.perf_counter()
 
     try:
-        from neural_chat.regime_memory import RegimeFingerprint, RegimeMemory
-        from neural_chat.market_topology import compute_market_topology
+        from signalbrain.regime_memory import RegimeFingerprint, RegimeMemory
+        from signalbrain.topology import compute_market_topology
     except ImportError as e:
         suite.tests.append(TestResult(
             name="import", suite=suite.name,
