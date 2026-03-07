@@ -99,6 +99,16 @@ else:
         outcome_confidence: float = 0.0
         outcome_pnl: float = 0.0
 
+        def _hash_float(self) -> float:
+            """Convert topological_hash to a [0,1] float safely."""
+            if not self.topological_hash:
+                return 0.0
+            clean = self.topological_hash.replace("0x", "").replace("0X", "")
+            try:
+                return int(clean[:10], 16) / (16**10)
+            except ValueError:
+                return int(hashlib.md5(clean.encode()).hexdigest()[:10], 16) / (16**10)
+
         def to_vector(self) -> np.ndarray:
             """Convert to 20-dim numeric vector."""
             regime_code = _REGIME_MAP.get(self.spectral_regime, 7) / 7.0
@@ -113,8 +123,7 @@ else:
                 self.spread_zscore, self.correlation_spy,
                 self.persistence_stability, self.persistence_entropy / 10.0,
                 self.max_persistence / 10.0,
-                int(self.topological_hash[:10] or "0", 16) / (16**10)
-                if self.topological_hash else 0.0,
+                self._hash_float(),
             ], dtype=np.float32)
 
         def fingerprint_id(self) -> str:
