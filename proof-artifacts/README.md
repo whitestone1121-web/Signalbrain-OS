@@ -19,6 +19,12 @@ SignalBrain-OS
 │   └── Probabilistic LLM intent → Deterministic compiled action
 │       4 policies: Technical · Sentiment · Flow · Volatility
 │
+├── Apex17 Robotics Engine (CUDA + C++20)
+│   ├── Spatial Perception: LiDAR → USI Topology → Motion Intent → Safety Policy
+│   ├── H₀ Persistent Homology — topological fingerprinting
+│   ├── SpatialCouncil: 4-agent deliberation (Solidity · Flow · Topology · Risk)
+│   └── O(1) SceneMemory recall via topological hash
+│
 ├── PicoAgent Swarm Runtime
 │   ├── Sentinel Pipeline: Ingest → Router → Validator
 │   ├── Swarm Mode: lightweight fire-and-forget execution
@@ -62,6 +68,12 @@ Run a 10-second benchmark:
 
 ```bash
 python proof-artifacts/benchmarks/run_canonical.py --duration 10
+```
+
+Run the **Robotics Engine proof suite** (15 tests across 4 suites):
+
+```bash
+python proof-artifacts/benchmarks/run_robotics_proof.py --skip-cpp
 ```
 
 Run the full expanded policy test suite (31 tests across 6 categories):
@@ -143,6 +155,74 @@ Covers all 4 policy agents: Technical, Sentiment, Flow, Volatility.
 |------|----------------|
 | `multiprocess_invariance` | 4 child processes → identical hashes |
 | `reimport_invariance` | Import → draft → reimport → same hashes |
+
+---
+
+## Apex17 Robotics Engine Proof Suite — 15 Tests Across 4 Suites
+
+Run the full robotics proof suite:
+
+```bash
+python proof-artifacts/benchmarks/run_robotics_proof.py
+python proof-artifacts/benchmarks/run_robotics_proof.py --skip-cpp   # Python-only
+```
+
+### Suite 1: Market Topology Engine (6 tests)
+
+Tests the H₀ Persistent Homology engine — the same topological fingerprinting
+used in both spatial perception (Apex17) and market regime detection.
+
+| Test | What It Proves |
+|------|----------------|
+| `linear_trend_stability` | Monotonic signal → stability ≥ 0.99 |
+| `random_walk_low_stability` | Random walk → lower stability (detects noise) |
+| `deterministic_hash` | Same input → identical regime hash (deterministic) |
+| `latency_under_5ms` | 100 iterations avg < 5ms (production-grade speed) |
+| `complex_signal_entropy` | Complex signal → entropy > 1.0 (richness detected) |
+| `output_fields_complete` | All 5 required output fields present |
+
+### Suite 2: Regime Memory — O(1) Hash Recall (5 tests)
+
+Tests the 20-dimensional RegimeFingerprint and the topological hash-based
+memory recall system.
+
+| Test | What It Proves |
+|------|----------------|
+| `fingerprint_20d_vector` | Vector shape is exactly (20,) |
+| `o1_hash_recall` | Store → recall by topological hash → exact match |
+| `unknown_hash_empty` | Unknown hash → empty result (no false positives) |
+| `memory_stats` | Stats report 20 dims + correct hash count |
+| `summary_has_topo` | Human-readable summary includes `topo=` field |
+
+### Suite 3: Topological Guard — Director Integration (4 tests)
+
+Tests the topological guard / veto mechanism that connects the perception
+engine to the Director's decision-making.
+
+| Test | What It Proves |
+|------|----------------|
+| `topo_hash_index` | Multiple fingerprints tracked by hash |
+| `risk_multiplier_tightens` | Bad outcome history → multiplier ≤ 1.0 |
+| `topo_hash_roundtrip` | Topology engine hash → fingerprint → match |
+| `capacity_enforcement` | Ring buffer respects max_total capacity |
+
+### Suite 4: C++ Engine (57 tests — requires CUDA build)
+
+Orchestrates the compiled C++ test binaries:
+- `spatial_prior_tests` (36 tests) — SpatialPrior engine, config validation, compute, RMQ, PH
+- `spatial_council_tests` (21 tests) — 4-agent council, Director deliberation, persistence modifiers
+- `apex17_smoke_test` — end-to-end smoke test
+
+### Expected Output
+
+```
+✅ Market Topology Engine — 6/6 passed (1597.1ms)
+✅ Regime Memory — 5/5 passed (608.1ms)
+✅ Topological Guard — 4/4 passed (5.0ms)
+
+✅ ALL PASSED — 15/15 tests (0 skipped) in 2.21s
+Digest: 2ea6bd56e8f2b2ba
+```
 
 ---
 
@@ -236,6 +316,7 @@ proof-artifacts/
 ├── README.md
 ├── benchmarks/
 │   ├── run_canonical.py               ← Core benchmark
+│   ├── run_robotics_proof.py          ← Apex17 Robotics proof (15 tests)
 │   └── reproduce_published.py         ← Validate website claims
 ├── replay/
 │   └── verify.py                      ← USI + Merkle + replay checks
