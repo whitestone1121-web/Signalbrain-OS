@@ -1,0 +1,160 @@
+{
+  "run_id": "e9e09eb7ebda",
+  "timestamp_utc": "2026-03-07T17:12:19Z",
+  "suites": [
+    {
+      "name": "Market Topology Engine",
+      "tests": [
+        {
+          "name": "linear_trend_stability",
+          "suite": "Market Topology Engine",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "stability=1.000",
+          "skipped": false
+        },
+        {
+          "name": "random_walk_low_stability",
+          "suite": "Market Topology Engine",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "stability=0.777",
+          "skipped": false
+        },
+        {
+          "name": "deterministic_hash",
+          "suite": "Market Topology Engine",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "hash=0x1D847D20807F25...",
+          "skipped": false
+        },
+        {
+          "name": "latency_under_5ms",
+          "suite": "Market Topology Engine",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "0.086ms avg",
+          "skipped": false
+        },
+        {
+          "name": "complex_signal_entropy",
+          "suite": "Market Topology Engine",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "entropy=4.216",
+          "skipped": false
+        },
+        {
+          "name": "output_fields_complete",
+          "suite": "Market Topology Engine",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "5 fields present",
+          "skipped": false
+        }
+      ],
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_ms": 3416.9249509868678
+    },
+    {
+      "name": "Regime Memory",
+      "tests": [
+        {
+          "name": "fingerprint_20d_vector",
+          "suite": "Regime Memory",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "shape=(20,)",
+          "skipped": false
+        },
+        {
+          "name": "o1_hash_recall",
+          "suite": "Regime Memory",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "",
+          "skipped": false
+        },
+        {
+          "name": "unknown_hash_empty",
+          "suite": "Regime Memory",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "",
+          "skipped": false
+        },
+        {
+          "name": "memory_stats",
+          "suite": "Regime Memory",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "dims=20 hashes=1",
+          "skipped": false
+        },
+        {
+          "name": "summary_has_topo",
+          "suite": "Regime Memory",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "Stable | vol=50p IV=0 rsi=55 VaR=0.0200 Kelly=0.10 topo=0.90",
+          "skipped": false
+        }
+      ],
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_ms": 133.6361819994636
+    },
+    {
+      "name": "Topological Guard",
+      "tests": [
+        {
+          "name": "topo_hash_index",
+          "suite": "Topological Guard",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "hashes=2 fps=2",
+          "skipped": false
+        },
+        {
+          "name": "risk_multiplier_tightens",
+          "suite": "Topological Guard",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "multiplier=0.850",
+          "skipped": false
+        },
+        {
+          "name": "topo_hash_roundtrip",
+          "suite": "Topological Guard",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "hash=0x05F163EB65FD51... stab=0.130",
+          "skipped": false
+        },
+        {
+          "name": "capacity_enforcement",
+          "suite": "Topological Guard",
+          "passed": true,
+          "elapsed_ms": 0.0,
+          "detail": "stored=10 (max_total=10)",
+          "skipped": false
+        }
+      ],
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_ms": 0.491915998281911
+    }
+  ],
+  "total_tests": 15,
+  "total_passed": 15,
+  "total_failed": 0,
+  "total_skipped": 0,
+  "elapsed_sec": 3.551,
+  "all_passed": true,
+  "digest": "76c18abd42cbe746"
+}
