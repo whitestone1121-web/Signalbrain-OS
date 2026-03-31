@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SignalBrain Telecom — AI-Powered Network Operations Center</title>
+  <meta name="description" content="SignalBrain Telecom: Zero-exfiltration AIOps for telecom operators. Real-time trace parsing, anomaly detection, and LLM-driven escalation — running entirely on-premise on NVIDIA hardware."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #050810;
+      --surface: #0b1120;
+      --surface2: #101828;
+      --border: rgba(99,179,237,0.12);
+      --accent: #00e5ff;
+      --accent2: #7c3aed;
+      --accent3: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --text: #f0f6ff;
+      --muted: #8a9ec0;
+      --card-bg: rgba(16,24,40,0.7);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── ANIMATED BACKGROUND ── */
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+    .bg-orb-1 { width: 700px; height: 700px; background: rgba(0,229,255,0.05); top: -300px; right: -200px; }
+    .bg-orb-2 { width: 500px; height: 500px; background: rgba(245,158,11,0.04); bottom: -100px; left: -200px; }
+    .bg-orb-3 { width: 400px; height: 400px; background: rgba(124,58,237,0.04); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      background: rgba(5,8,16,0.85);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-logo {
+      font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: linear-gradient(135deg, var(--accent), #0084ff);
+      color: #000 !important; padding: 8px 20px; border-radius: 8px;
+      font-weight: 700 !important; font-size: 0.85rem !important;
+      transition: opacity 0.2s !important;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    .nav-back {
+      color: var(--accent) !important; font-weight: 600 !important;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    section { position: relative; z-index: 1; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 80px 24px 60px;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3);
+      padding: 6px 16px; border-radius: 100px; margin-bottom: 32px;
+      font-size: 0.8rem; color: var(--amber); font-weight: 600; letter-spacing: 0.04em;
+    }
+
+    .hero-badge .dot { width: 6px; height: 6px; background: var(--amber); border-radius: 50%; animation: pulse 2s infinite; }
+
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+    h1 {
+      font-size: clamp(2.6rem, 6.5vw, 5rem);
+      font-weight: 900; letter-spacing: -0.04em; line-height: 1.05;
+      margin-bottom: 24px;
+    }
+
+    h1 .grad-telecom {
+      background: linear-gradient(135deg, var(--amber) 0%, var(--accent) 50%, #a78bfa 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--muted); max-width: 680px; margin: 0 auto 48px;
+      font-weight: 400;
+    }
+
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--amber), #f97316);
+      color: #000; font-weight: 700; font-size: 1rem;
+      padding: 14px 32px; border-radius: 10px; text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 32px rgba(245,158,11,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 48px rgba(245,158,11,0.5); }
+
+    .btn-secondary {
+      background: var(--card-bg); color: var(--text); font-weight: 600; font-size: 1rem;
+      padding: 14px 32px; border-radius: 10px; text-decoration: none;
+      border: 1px solid var(--border); transition: border-color 0.2s;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+    .btn-secondary:hover { border-color: rgba(245,158,11,0.4); }
+
+    /* ── LIVE DEMO TERMINAL ── */
+    .terminal-section {
+      padding: 40px 24px 100px;
+      max-width: 900px; margin: 0 auto;
+    }
+
+    .terminal {
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 60px rgba(245,158,11,0.08);
+    }
+
+    .terminal-bar {
+      background: rgba(255,255,255,0.05);
+      padding: 12px 20px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; }
+    .dot-y { background: #f59e0b; }
+    .dot-g { background: #10b981; }
+
+    .terminal-title {
+      margin-left: 12px; font-size: 0.8rem; color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .terminal-body {
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.9;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .t-prompt { color: var(--accent3); }
+    .t-cmd { color: var(--text); }
+    .t-info { color: var(--accent); }
+    .t-warn { color: var(--amber); }
+    .t-critical { color: var(--red); font-weight: 700; }
+    .t-ok { color: var(--accent3); }
+    .t-muted { color: var(--muted); }
+    .t-llm { color: #c084fc; font-style: italic; }
+
+    .blink { animation: blink-cursor 1s step-end infinite; }
+    @keyframes blink-cursor { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      padding: 40px 24px;
+      display: flex; justify-content: center; gap: 0; flex-wrap: wrap;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+
+    .stat {
+      text-align: center; padding: 20px 48px;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-number { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.03em; color: var(--amber); }
+    .stat-label { color: var(--muted); font-size: 0.85rem; margin-top: 4px; font-weight: 500; }
+
+    /* ── CAPABILITIES ── */
+    .capabilities {
+      padding: 100px 24px;
+      max-width: 1200px; margin: 0 auto;
+    }
+
+    .section-label {
+      text-align: center; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em;
+      color: var(--amber); text-transform: uppercase; margin-bottom: 16px;
+    }
+
+    h2 {
+      text-align: center; font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px;
+    }
+
+    .section-sub {
+      text-align: center; color: var(--muted); max-width: 580px;
+      margin: 0 auto 64px; font-size: 1.05rem;
+    }
+
+    .cap-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .cap-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 36px;
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .cap-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(245,158,11,0.3);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,158,11,0.1);
+    }
+
+    .cap-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 20px;
+    }
+    .icon-amber  { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); }
+    .icon-cyan   { background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.2); }
+    .icon-purple { background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.2); }
+    .icon-green  { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); }
+    .icon-red    { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); }
+
+    .cap-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
+    .cap-card p  { color: var(--muted); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.7; }
+
+    .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; padding: 4px 10px; border-radius: 6px;
+      background: rgba(255,255,255,0.05); color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    /* ── ARCHITECTURE DIAGRAM ── */
+    .architecture {
+      padding: 80px 24px;
+      background: linear-gradient(135deg, rgba(245,158,11,0.04), rgba(0,229,255,0.04));
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+
+    .arch-inner { max-width: 1000px; margin: 0 auto; }
+
+    .arch-flow {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; flex-wrap: wrap; margin-top: 48px;
+    }
+
+    .arch-node {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 14px; padding: 24px 28px; text-align: center;
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); min-width: 180px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .arch-node:hover { border-color: rgba(245,158,11,0.35); transform: translateY(-3px); }
+    .arch-node .node-icon { font-size: 2rem; margin-bottom: 8px; }
+    .arch-node .node-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .arch-node .node-desc { color: var(--muted); font-size: 0.78rem; }
+
+    .arch-arrow {
+      font-size: 1.5rem; color: var(--amber); padding: 0 12px;
+      animation: arrow-pulse 2s ease-in-out infinite;
+    }
+    @keyframes arrow-pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+    /* ── COMPLIANCE ── */
+    .compliance { padding: 100px 24px; max-width: 900px; margin: 0 auto; }
+
+    .compliance-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px; margin-top: 48px;
+    }
+
+    .comp-item {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px); text-align: center;
+      transition: border-color 0.2s;
+    }
+    .comp-item:hover { border-color: rgba(245,158,11,0.25); }
+    .comp-item .comp-icon { font-size: 2rem; margin-bottom: 12px; }
+    .comp-item .comp-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .comp-item .comp-desc { color: var(--muted); font-size: 0.82rem; }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 120px 24px; text-align: center;
+      max-width: 700px; margin: 0 auto;
+    }
+
+    .cta-section h2 { font-size: clamp(2rem, 4vw, 3.2rem); margin-bottom: 16px; }
+    .cta-section p  { color: var(--muted); font-size: 1.1rem; margin-bottom: 40px; }
+
+    .email-form {
+      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    }
+
+    .email-input {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); padding: 14px 20px; border-radius: 10px;
+      font-size: 1rem; outline: none; flex: 1; min-width: 260px;
+      font-family: inherit; transition: border-color 0.2s;
+    }
+    .email-input:focus { border-color: var(--amber); }
+    .email-input::placeholder { color: var(--muted); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 40px; z-index: 1; position: relative;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+    }
+
+    .footer-logo {
+      font-size: 1rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text); }
+
+    /* ── ANIMATE IN ── */
+    .fade-up {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    @media(max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { gap: 16px; }
+      .stat { padding: 16px 24px; }
+      .arch-flow { flex-direction: column; }
+      .arch-arrow { transform: rotate(90deg); }
+      footer { flex-direction: column; align-items: center; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">SignalBrain</a>
+  <div class="nav-links">
+    <a href="/" class="nav-back">← Back to Home</a>
+    <a href="#capabilities">Capabilities</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#compliance">Compliance</a>
+    <a href="#contact" class="nav-cta">Request Pilot</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    TELECOM AIOps &nbsp;·&nbsp; Zero-Exfiltration Architecture
+  </div>
+  <h1>Your network.<br/><span class="grad-telecom">Our brain.</span></h1>
+  <p class="hero-sub">
+    SignalBrain Telecom is an edge-native AI engine that parses live UE trace files, detects anomalies in real-time, and delivers LLM-synthesized operational narratives — all running on your hardware. No data ever leaves your infrastructure.
+  </p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">Schedule a Demo →</a>
+    <a href="#architecture" class="btn-secondary">View Architecture</a>
+  </div>
+</section>
+
+<!-- LIVE TERMINAL DEMO -->
+<section class="terminal-section fade-up">
+  <div class="terminal">
+    <div class="terminal-bar">
+      <span class="terminal-dot dot-r"></span>
+      <span class="terminal-dot dot-y"></span>
+      <span class="terminal-dot dot-g"></span>
+      <span class="terminal-title">sentinel-streamer ● live feed</span>
+    </div>
+    <div class="terminal-body" id="terminalBody">
+      <div><span class="t-prompt">[Sentinel]</span> <span class="t-info">Cognitive Data Pipeline initialized.</span></div>
+      <div><span class="t-prompt">[Sentinel]</span> <span class="t-cmd">Loaded 2,847 UE trace records from /mnt/tracefile.xlsx</span></div>
+      <div><span class="t-prompt">[Sentinel]</span> <span class="t-ok">Ollama LLM bridge connected → llama3:latest</span></div>
+      <div><span class="t-muted">──────────────────────────────────────────</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat fade-up">
+    <div class="stat-number">&lt;200ms</div>
+    <div class="stat-label">Anomaly Detection Latency</div>
+  </div>
+  <div class="stat fade-up">
+    <div class="stat-number">40x</div>
+    <div class="stat-label">DNA + TurboQuant Compression</div>
+  </div>
+  <div class="stat fade-up">
+    <div class="stat-number">0 bytes</div>
+    <div class="stat-label">Data Exfiltrated to Cloud</div>
+  </div>
+  <div class="stat fade-up">
+    <div class="stat-number">24/7</div>
+    <div class="stat-label">Autonomous Monitoring</div>
+  </div>
+</div>
+
+<!-- CAPABILITIES -->
+<section class="capabilities" id="capabilities">
+  <p class="section-label">Capabilities</p>
+  <h2 class="fade-up">AI-powered network intelligence</h2>
+  <p class="section-sub fade-up">From raw trace files to executive-grade insight — in milliseconds, not hours.</p>
+
+  <div class="cap-grid">
+    <div class="cap-card fade-up">
+      <div class="cap-icon icon-amber">📡</div>
+      <h3>Live Trace Ingestion</h3>
+      <p>Ingests raw UE trace files (CSV, XLSX, PCAP) from RAN, Core, and IMS nodes. Parses 3GPP event codes and correlates handover chains in real-time.</p>
+      <div class="tag-list">
+        <span class="tag">3GPP TS 36.331</span>
+        <span class="tag">FastAPI SSE</span>
+        <span class="tag">Hot-reload</span>
+      </div>
+    </div>
+
+    <div class="cap-card fade-up">
+      <div class="cap-icon icon-red">🚨</div>
+      <h3>Anomaly Escalation Engine</h3>
+      <p>Detects HandoverPreparationFailure, RLF cascades, and abnormal RSRP degradation patterns. Auto-escalates critical events to the NOC queue with severity classification.</p>
+      <div class="tag-list">
+        <span class="tag">Pattern matching</span>
+        <span class="tag">Severity triage</span>
+        <span class="tag">Auto-escalation</span>
+      </div>
+    </div>
+
+    <div class="cap-card fade-up">
+      <div class="cap-icon icon-purple">🧠</div>
+      <h3>LLM-Synthesized Narratives</h3>
+      <p>Every trace event is analyzed by an on-premise LLM (Llama 3 / Titan) that generates human-readable operational narratives and root-cause hypotheses in natural language.</p>
+      <div class="tag-list">
+        <span class="tag">Llama 3 70B</span>
+        <span class="tag">Cognitive cache</span>
+        <span class="tag">Sub-ms repeat</span>
+      </div>
+    </div>
+
+    <div class="cap-card fade-up">
+      <div class="cap-icon icon-cyan">📊</div>
+      <h3>Real-Time NOC Dashboard</h3>
+      <p>A browser-native command center displaying live event feeds, KPI gauges, anomaly timelines, and escalation queues — updated via Server-Sent Events with zero polling overhead.</p>
+      <div class="tag-list">
+        <span class="tag">SSE streaming</span>
+        <span class="tag">WebSocket-free</span>
+        <span class="tag">Dark-mode UI</span>
+      </div>
+    </div>
+
+    <div class="cap-card fade-up">
+      <div class="cap-icon icon-green">⚡</div>
+      <h3>TurboQuant Compression</h3>
+      <p>Integrates Google's March 2026 KV-cache compression algorithm for 4x VRAM reduction during inference — enabling massive context injection without hardware expansion.</p>
+      <div class="tag-list">
+        <span class="tag">PolarQuant</span>
+        <span class="tag">3-bit + 1-bit JL</span>
+        <span class="tag">99.8% fidelity</span>
+      </div>
+    </div>
+
+    <div class="cap-card fade-up">
+      <div class="cap-icon icon-amber">🔒</div>
+      <h3>Zero-Exfiltration Architecture</h3>
+      <p>The entire AI stack — ingestion, inference, dashboard — runs on-premise on your NVIDIA hardware. No API calls leave your infrastructure. Full data sovereignty guaranteed.</p>
+      <div class="tag-list">
+        <span class="tag">Air-gap ready</span>
+        <span class="tag">NVIDIA Blackwell</span>
+        <span class="tag">Docker isolated</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="architecture" id="architecture">
+  <div class="arch-inner">
+    <p class="section-label">Architecture</p>
+    <h2 class="fade-up">End-to-end signal flow</h2>
+    <p class="section-sub fade-up">From raw radio traces to executive-grade AI insight — entirely on your silicon.</p>
+
+    <div class="arch-flow fade-up">
+      <div class="arch-node">
+        <div class="node-icon">📡</div>
+        <div class="node-title">RAN / Core / IMS</div>
+        <div class="node-desc">Raw UE trace files</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="node-icon">⚙️</div>
+        <div class="node-title">Sentinel Ingestion</div>
+        <div class="node-desc">FastAPI + Pandas parser</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="node-icon">🧠</div>
+        <div class="node-title">Titan LLM Engine</div>
+        <div class="node-desc">Ollama + TurboQuant</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="node-icon">📊</div>
+        <div class="node-title">NOC Dashboard</div>
+        <div class="node-desc">SSE real-time feed</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPLIANCE -->
+<section class="compliance" id="compliance">
+  <p class="section-label">Compliance & Security</p>
+  <h2 class="fade-up">Built for regulated telecoms</h2>
+  <p class="section-sub fade-up">Every architectural decision optimized for data sovereignty, auditability, and regulatory compliance.</p>
+
+  <div class="compliance-grid">
+    <div class="comp-item fade-up">
+      <div class="comp-icon">🏛️</div>
+      <div class="comp-title">Data Sovereignty</div>
+      <div class="comp-desc">All inference runs on-premise. Zero cloud egress. Compliant with MENA data residency mandates.</div>
+    </div>
+    <div class="comp-item fade-up">
+      <div class="comp-icon">🔐</div>
+      <div class="comp-title">Air-Gap Deployment</div>
+      <div class="comp-desc">Full stack operable without internet. Docker Compose isolated networking.</div>
+    </div>
+    <div class="comp-item fade-up">
+      <div class="comp-icon">📋</div>
+      <div class="comp-title">Audit Trail</div>
+      <div class="comp-desc">SHA-256 hashed USI records for every inference decision. Immutable compliance ledger.</div>
+    </div>
+    <div class="comp-item fade-up">
+      <div class="comp-icon">🛡️</div>
+      <div class="comp-title">NVIDIA Hardened</div>
+      <div class="comp-desc">Runs on Blackwell (RTX PRO 6000, sm_120). Hardware-locked VRAM residency.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <h2 class="fade-up">Ready to deploy AI<br/>inside your network?</h2>
+  <p class="fade-up">We're onboarding pilot partners across MENA, APAC, and European telecom operators. Priority access for Tier-1 and Tier-2 MNOs.</p>
+  <div class="email-form fade-up">
+    <input class="email-input" type="email" id="emailInput" placeholder="noc-lead@operator.com"/>
+    <a href="#" class="btn-primary" onclick="handleSubmit(event)">Request Pilot Access</a>
+  </div>
+  <p id="formMsg" style="margin-top:16px;color:var(--amber);display:none;font-size:0.9rem;">✅ Request received — our team will reach out within 24 hours.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">SignalBrain Inc.</div>
+  <div class="footer-links">
+    <a href="/">Home</a>
+    <a href="https://github.com/whitestone1121-web" target="_blank" rel="noopener">GitHub</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div style="color:var(--muted);font-size:0.8rem;">© 2026 SignalBrain Inc. San Diego, CA</div>
+</footer>
+
+<script>
+  // Fade-in on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Email form
+  function handleSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('emailInput').value;
+    if (email && email.includes('@')) {
+      document.getElementById('formMsg').style.display = 'block';
+      document.getElementById('emailInput').value = '';
+    }
+  }
+
+  // Live terminal simulation
+  const events = [
+    { type: 'normal', text: '[EVENT] UE_ID: 4821 | RRC_CONN_SETUP | EARFCN: 1350 | PCI: 142 | RSRP: -78 dBm' },
+    { type: 'llm', text: '[LLM] "Standard RRC connection on Band 3. Signal quality excellent. No action required."' },
+    { type: 'normal', text: '[EVENT] UE_ID: 9033 | MEAS_REPORT | ServPCI: 87 | NeighPCI: 214 | RSRP_Δ: +6 dB' },
+    { type: 'llm', text: '[LLM] "Measurement report indicates stronger neighbor cell. Handover preparation likely imminent."' },
+    { type: 'warn', text: '[EVENT] UE_ID: 2110 | HO_PREPARATION_FAILURE | TargetPCI: 214 | Cause: S1AP_TIMEOUT' },
+    { type: 'critical', text: '[ESCALATION] ⚠ HandoverPreparationFailure detected — S1AP timeout to PCI 214. Escalated to NOC queue.' },
+    { type: 'llm', text: '[LLM] "Critical: S1AP signaling timeout during HO prep suggests backhaul congestion or MME overload on target eNB. Recommend immediate X2 path audit."' },
+    { type: 'normal', text: '[EVENT] UE_ID: 5500 | RRC_CONN_RECONFIG | EARFCN: 2850 | PCI: 301 | CA: Activated' },
+    { type: 'llm', text: '[LLM] "Carrier Aggregation activated on Band 7. UE throughput expected to increase 40-60%."' },
+    { type: 'normal', text: '[EVENT] UE_ID: 7712 | ATTACH_REQUEST | IMSI_Hash: a3f8...c21d | TAC: 0x4A01' },
+    { type: 'ok', text: '[CACHE HIT] Cognitive cache matched — latency: 0.3ms (vs 1,200ms cold inference)' },
+    { type: 'warn', text: '[EVENT] UE_ID: 3344 | RLF_REPORT | LastPCI: 142 | TimeSinceRLF: 850ms | Cause: T310_EXPIRY' },
+    { type: 'critical', text: '[ESCALATION] ⚠ Radio Link Failure cascade detected — T310 expiry on PCI 142. Coverage gap suspected.' },
+    { type: 'llm', text: '[LLM] "RLF with T310 expiry and 850ms duration indicates a deep fade or antenna tilt issue at PCI 142. Cross-reference with drive test data."' },
+  ];
+
+  const body = document.getElementById('terminalBody');
+  let idx = 0;
+
+  function addLine() {
+    const ev = events[idx % events.length];
+    const div = document.createElement('div');
+    const cls = ev.type === 'warn' ? 't-warn' : ev.type === 'critical' ? 't-critical' : ev.type === 'llm' ? 't-llm' : ev.type === 'ok' ? 't-ok' : 't-cmd';
+    div.innerHTML = `<span class="${cls}">${ev.text}</span>`;
+    div.style.opacity = '0';
+    div.style.transform = 'translateY(8px)';
+    div.style.transition = 'opacity 0.4s, transform 0.4s';
+    body.appendChild(div);
+    requestAnimationFrame(() => { div.style.opacity = '1'; div.style.transform = 'translateY(0)'; });
+    body.scrollTop = body.scrollHeight;
+    idx++;
+    setTimeout(addLine, ev.type === 'llm' ? 2800 : ev.type === 'critical' ? 2200 : 1400);
+  }
+
+  setTimeout(addLine, 1500);
+</script>
+</body>
+</html>
